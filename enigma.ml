@@ -15,9 +15,14 @@ type config = {
 }
 
 let index c = Char.code c - Char.code 'A'
-let map_r_to_l _wiring _top_letter _input_pos =
-  failwith "Unimplemented"
+(* let map_r_to_l _wiring _top_letter _input_pos =
+  failwith "Unimplemented" *)
 
+let map_r_to_l wiring top_letter input_pos = 
+  let offset = index top_letter in
+  let internal_pos = (input_pos + offset) mod 26 in
+  let letter = String.get wiring internal_pos in
+  let mapped_pos = index letter in (mapped_pos - offset + 26) mod 26
 let map_l_to_r _wiring _top_letter _input_pos =
   failwith "Unimplemented"
 
