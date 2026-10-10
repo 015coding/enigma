@@ -28,6 +28,38 @@ let map_plug_test name plugs c expected =
   name >:: fun _ ->
     assert_equal expected (map_plug plugs c)
 
+let r1 = { wiring = rotor_I; turnover = 'Q' }
+let r2 = { wiring = rotor_II; turnover = 'E' }
+let r3 = { wiring = rotor_III; turnover = 'V' }   
+let simple_config = {
+    refl = identify;
+    rotors = [];
+    plugboard = [];
+}
+let hard_config = {
+  refl = reflector_B;
+  rotors = [
+    { rotor = r1; top_letter = 'M' };
+    { rotor = r2; top_letter = 'E' };
+    { rotor = r3; top_letter = 'Z' };
+  ];
+  plugboard = [
+    ('A', 'Z');
+    ('G', 'P');
+    ('B', 'Q');
+    ('C', 'X');
+  ];
+}
+
+let cipher_char_test name config c expected =
+  name >:: fun _ -> 
+    assert_equal expected (cipher_char config c)
+let cipher_alphabet_test name config expected =
+  name >:: fun _ ->
+    let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
+    let actual = String.map (cipher_char config) alphabet in
+    assert_equal ~printer:(fun s -> s) expected actual
+
 
 let suite =
   "Enigma test suite" >::: [
@@ -53,6 +85,10 @@ let suite =
     map_plug_test "AZ map A to Z" [('A' , 'Z')] 'A' 'Z';
     map_plug_test "BD map D to B" [('B' , 'D')] 'D' 'B';
     map_plug_test "AB map A to B" [('X' , 'Y') ; ('A' , 'B')] 'A' 'B';
+    
+    cipher_char_test "identify map A to A"  simple_config 'A' 'A' ;
+    cipher_alphabet_test "hard config 1: mixed offsets and plugboard" hard_config "VJXLYWURNBSDQIPOMHKZGAFCET" ;
+ 
   ]
 
 let () = run_test_tt_main suite
