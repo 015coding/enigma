@@ -24,6 +24,11 @@ let map_refl_test name wiring input expected =
   name >:: fun _ ->
     assert_equal expected (map_refl wiring input)
 
+let map_plug_test name plugs c expected =
+  name >:: fun _ ->
+    assert_equal expected (map_plug plugs c)
+
+
 let suite =
   "Enigma test suite" >::: [
     index_test "index of A is 0" 'A' 0;
@@ -45,6 +50,9 @@ let suite =
     map_refl_test "reflector_B maps Y to A" reflector_B 24 0;
     map_refl_test "reflector_C maps A to C" reflector_C 0 5;
 
+    map_plug_test "AZ map A to Z" [('A' , 'Z')] 'A' 'Z';
+    map_plug_test "BD map D to B" [('B' , 'D')] 'D' 'B';
+    map_plug_test "AB map A to B" [('X' , 'Y') ; ('A' , 'B')] 'A' 'B';
   ]
 
 let () = run_test_tt_main suite
