@@ -85,6 +85,33 @@ let step_test name input expected =
   name >:: fun _ ->
     assert_equal expected (step input)
 
+
+let full_cipher_config = {
+  refl = reflector_B;
+  rotors = [
+    {
+      rotor = { wiring = rotor_I; turnover = 'Q' };
+      top_letter = 'F';
+    };
+    {
+      rotor = { wiring = rotor_II; turnover = 'E' };
+      top_letter = 'U';
+    };
+    {
+      rotor = { wiring = rotor_III; turnover = 'V' };
+      top_letter = 'N';
+    };
+  ];
+  plugboard = [('A', 'Z')];
+}
+
+let cipher_test name config input expected =
+  name >:: fun _ ->
+    assert_equal
+      ~printer:(fun s -> s)
+      expected
+      (cipher config input)
+
 let suite =
   "Enigma test suite" >::: [
     index_test "index of A is 0" 'A' 0;
@@ -137,6 +164,22 @@ let suite =
   step_test "leftmost turnover alone"
     (make_step_config 'V' 'D' 'P')
     (make_step_config 'V' 'D' 'Q');
+
+  cipher_test "empty input returns empty string"
+    full_cipher_config "" "";
+
+  cipher_test "identity machine keeps HELLO"
+    simple_config "HELLO" "HELLO";
+
+  cipher_test "single character stepping"
+    full_cipher_config "Y" "O";
+
+  cipher_test "full Enigma encrypts YNGXQ to OCAML"
+    full_cipher_config "YNGXQ" "OCAML";
+
+  cipher_test "full Enigma decrypts OCAML to YNGXQ"
+    full_cipher_config "OCAML" "YNGXQ";
+
 
  
   ]
