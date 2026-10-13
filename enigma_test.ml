@@ -136,7 +136,7 @@ let suite =
     map_refl_test "identify reflector A" identify 0 0;
     map_refl_test "reflector_B maps A to Y" reflector_B 0 24;
     map_refl_test "reflector_B maps Y to A" reflector_B 24 0;
-    map_refl_test "reflector_C maps A to C" reflector_C 0 5;
+    map_refl_test "reflector_C maps A to F" reflector_C 0 5;
     map_refl_test "reflector C maps F to A" reflector_C 5 0;
 
     map_plug_test "AZ map A to Z" [('A' , 'Z')] 'A' 'Z';

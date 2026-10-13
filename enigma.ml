@@ -43,8 +43,8 @@ let map_refl wiring input_pos =
 let rec map_plug plugs c =
   match plugs with
   | [] -> c
-  | (a,b) :: rest -> if c == a then b 
-  else if c == b then a else map_plug rest c
+  | (a,b) :: rest -> if c = a then b 
+  else if c = b then a else map_plug rest c
 
 (* Helper Function *)
 let rec map_rotor_r_to_l rotors pos =
