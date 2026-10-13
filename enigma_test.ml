@@ -116,6 +116,10 @@ let suite =
   "Enigma test suite" >::: [
     index_test "index of A is 0" 'A' 0;
     index_test "index of Z is 25" 'Z' 25;
+    index_test "index of B is 1" 'B' 1;
+    index_test "index of M is 12" 'M' 12;
+    index_test "index of Y is 24" 'Y' 24;
+
 
     map_r_to_l_test "identify rotor A" identify 'A' 0 0;
     map_r_to_l_test "identify rotor M" identify 'M' 25 25;
@@ -127,18 +131,26 @@ let suite =
     map_l_to_r_test "identify rotor M" identify 'M' 25 25;
     map_l_to_r_test "rotor_I E to A" rotor_I 'A' 4 0;
     map_l_to_r_test "rotor_I at F" rotor_I 'F' 10 14;
+    map_l_to_r_test "rotor I maps A to U at A" rotor_I 'A' 0 20 ;
 
     map_refl_test "identify reflector A" identify 0 0;
     map_refl_test "reflector_B maps A to Y" reflector_B 0 24;
     map_refl_test "reflector_B maps Y to A" reflector_B 24 0;
     map_refl_test "reflector_C maps A to C" reflector_C 0 5;
+    map_refl_test "reflector C maps F to A" reflector_C 5 0;
 
     map_plug_test "AZ map A to Z" [('A' , 'Z')] 'A' 'Z';
     map_plug_test "BD map D to B" [('B' , 'D')] 'D' 'B';
     map_plug_test "AB map A to B" [('X' , 'Y') ; ('A' , 'B')] 'A' 'B';
-    
+    map_plug_test "empty plugboard keeps M" [] 'M' 'M';
+    map_plug_test "XY maps Y to X"  [('A', 'Z'); ('X', 'Y')] 'Y' 'X';
+
     cipher_char_test "identify map A to A"  simple_config 'A' 'A' ;
     cipher_alphabet_test "hard config 1: mixed offsets and plugboard" hard_config "VJXLYWURNBSDQIPOMHKZGAFCET" ;
+    cipher_char_test "identity maps Z to Z" simple_config 'Z' 'Z';
+    cipher_char_test "reflector B maps A to Y" { simple_config with refl = reflector_B } 'A' 'Y';
+    cipher_char_test "plugboard changes reflected A to Z" { simple_config with refl = reflector_B; plugboard = [('A', 'Z')]} 'Y' 'Z' ;
+
 
 (* Rule 1: Rightmost rotor *)
   step_test "rightmost O to P"
