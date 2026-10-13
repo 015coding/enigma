@@ -61,6 +61,30 @@ let cipher_alphabet_test name config expected =
     assert_equal ~printer:(fun s -> s) expected actual
 
 
+let make_step_config left middle right =
+  {
+    refl = reflector_B;
+    rotors = [
+      {
+        rotor = { wiring = rotor_III; turnover = 'V' };
+        top_letter = left;
+      };
+      {
+        rotor = { wiring = rotor_II; turnover = 'E' };
+        top_letter = middle;
+      };
+      {
+        rotor = { wiring = rotor_I; turnover = 'Q' };
+        top_letter = right;
+      };
+    ];
+    plugboard = [];
+  }
+
+let step_test name input expected =
+  name >:: fun _ ->
+    assert_equal expected (step input)
+
 let suite =
   "Enigma test suite" >::: [
     index_test "index of A is 0" 'A' 0;
@@ -88,6 +112,32 @@ let suite =
     
     cipher_char_test "identify map A to A"  simple_config 'A' 'A' ;
     cipher_alphabet_test "hard config 1: mixed offsets and plugboard" hard_config "VJXLYWURNBSDQIPOMHKZGAFCET" ;
+
+(* Rule 1: Rightmost rotor *)
+  step_test "rightmost O to P"
+    (make_step_config 'K' 'D' 'O')
+    (make_step_config 'K' 'D' 'P');
+
+  step_test "rightmost wraps Z to A"
+    (make_step_config 'K' 'D' 'Z')
+    (make_step_config 'K' 'D' 'A');
+
+  step_test "right turnover steps middle"
+    (make_step_config 'K' 'D' 'Q')
+    (make_step_config 'K' 'E' 'R');
+
+  step_test "middle turnover steps left"
+    (make_step_config 'K' 'E' 'R')
+    (make_step_config 'L' 'F' 'S');
+
+  step_test "both turnovers step once"
+    (make_step_config 'K' 'E' 'Q')
+    (make_step_config 'L' 'F' 'R');
+
+  step_test "leftmost turnover alone"
+    (make_step_config 'V' 'D' 'P')
+    (make_step_config 'V' 'D' 'Q');
+
  
   ]
 

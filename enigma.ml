@@ -70,8 +70,41 @@ let cipher_char config c =
   let letter = Char.chr (reverse_pos + Char.code 'A') in 
   map_plug config.plugboard letter
 
-let step _config =
-  failwith "Unimplemented"
+
+let next_letter c =
+  Char.chr (((index c + 1) mod 26) + Char.code 'A')
+
+
+let rotate_rotor r =
+  { r with top_letter = next_letter r.top_letter }
+
+let at_turnover r =
+  r.top_letter = r.rotor.turnover
+
+let rec step_rotors is_leftmost rotors =
+  match rotors with
+  | [] -> []
+  | [r] -> [rotate_rotor r]
+  | r :: ((right :: _) as rest) ->
+      let right_turnover = at_turnover right in
+      let own_turnover =
+        not is_leftmost && at_turnover r
+      in
+
+      let should_rotate =
+        right_turnover || own_turnover
+      in
+
+      let new_r =
+        if should_rotate then rotate_rotor r
+        else r
+      in
+
+      new_r :: step_rotors false rest
+
+let step config =
+  let new_rotors = step_rotors true config.rotors in
+  { config with rotors = new_rotors }
 
 let cipher _config _s =
   failwith "Unimplemented"
